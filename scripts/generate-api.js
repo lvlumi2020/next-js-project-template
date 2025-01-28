@@ -16,9 +16,9 @@ async function generate() {
             extractRequestBody: true
         });
 
-        console.log('API 生成成功！');
+        console.log('API generate success！');
     } catch (error) {
-        console.error('API 生成失败：', error);
+        console.error('API generate failed', error);
         process.exit(1);
     }
 }
