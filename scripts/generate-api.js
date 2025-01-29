@@ -6,7 +6,7 @@ async function generate() {
     try {
         await generateApi({
             name: 'api.ts',
-            output: path.resolve(__dirname, '../src/api'),
+            output: path.resolve(__dirname, '../renderer/src/api'),
             url: config.openapi.url,
             httpClientType: 'axios',
             generateClient: true,
