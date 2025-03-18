@@ -1,17 +1,28 @@
 "use client";
 
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider, message, Modal, theme } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import React, { useEffect, useState, ReactNode } from 'react';
+import { globalInstances } from '@/services';
 
 interface ThemeConfigProps {
     children: ReactNode
 }
 
+const bgColor = (isDarkTheme: boolean) => isDarkTheme ? "black" : "white";
+
 const ThemeConfig: React.FC<ThemeConfigProps> = ({ children }) => {
 
     const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false)
-    const bgColor = () => isDarkTheme ? "black" : "white";
+    const [messageInstance, messageContextHolder] = message.useMessage();
+    const [modalInstance, modalContextHolder] = Modal.useModal();
+
+    // 将实例注册到全局服务
+    useEffect(() => {
+        globalInstances.message = messageInstance;
+        globalInstances.modal = modalInstance;
+    }, [messageInstance, modalInstance]);
+
     useEffect(() => {
         const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
         setIsDarkTheme(darkModeQuery.matches);
@@ -21,7 +32,7 @@ const ThemeConfig: React.FC<ThemeConfigProps> = ({ children }) => {
     }, [])
 
     useEffect(() => {
-        process.env.DEFAULT_BACKGROUND_COLOR = bgColor();
+        process.env.DEFAULT_BACKGROUND_COLOR = bgColor(isDarkTheme);
     }, [isDarkTheme])
 
     return (
@@ -37,14 +48,17 @@ const ThemeConfig: React.FC<ThemeConfigProps> = ({ children }) => {
                         Form: {
                         },
                         Layout: {
-                            triggerBg: bgColor(),
-                            siderBg: bgColor(),
-                            lightSiderBg: bgColor(),
-                            lightTriggerBg: bgColor(),
-                            headerBg: bgColor(),
+                            triggerBg: bgColor(isDarkTheme),
+                            siderBg: bgColor(isDarkTheme),
+                            lightSiderBg: bgColor(isDarkTheme),
+                            lightTriggerBg: bgColor(isDarkTheme),
+                            headerBg: bgColor(isDarkTheme),
                         }
                     }
-                }} >{children}
+                }} >
+                {messageContextHolder}
+                {modalContextHolder}
+                {children}
             </ConfigProvider>
         </main>
     )
